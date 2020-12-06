@@ -1,0 +1,12 @@
+<resources>
+    <!-- プロジェクトの設定 -->
+    <string name="background">project</string>
+
+    <!-- 素材の説明 -->
+    <string name="backgroundImage">backgroundImage</string>
+    <string name="title_icon">title_icon</string>
+    <string name="prologue_icon">prologue_icon</string>
+    <string name="prologue_after_icon">prologue_after_icon</string>
+    <string name="PlayActivity">PlayActivity</string>
+    <string name="PlayLinesActivity">PlayLinesActivity</string>
+</resources>

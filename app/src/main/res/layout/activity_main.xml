@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:screenOrientation="landscape"
+    android:background="@color/black"
+    tools:context=".Activity.MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/backgroundImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="percent"
+        app:srcCompat="@drawable/background" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="262dp"
+        android:layout_height="106dp"
+        android:layout_marginBottom="171dp"
+        android:contentDescription="@string/title_icon"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.09"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/title_icon" />
+
+    <ImageButton
+        android:id="@+id/prologueButton"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:background="@color/Transparent"
+        android:contentDescription="@string/prologue_icon"
+        android:onClick="prologue_icon"
+        app:layout_constraintBottom_toTopOf="@+id/prologueAfterButton"
+        app:layout_constraintEnd_toEndOf="@+id/prologueAfterButton"
+        app:layout_constraintStart_toStartOf="@+id/prologueAfterButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.908"
+        app:srcCompat="@drawable/prologue_icon" />
+
+    <ImageButton
+        android:id="@+id/prologueAfterButton"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="301dp"
+        android:layout_marginBottom="60dp"
+        android:background="@color/Transparent"
+        android:contentDescription="@string/prologue_after_icon"
+        android:onClick="prologue_after_icon"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:srcCompat="@drawable/prologue_after_icon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
