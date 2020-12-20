@@ -1,4 +1,4 @@
-package Dao;
+package co.jp.phone.project.Dao;
 
 /**
  * entity定義

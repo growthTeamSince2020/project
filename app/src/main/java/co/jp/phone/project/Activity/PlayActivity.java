@@ -1,8 +1,7 @@
 package co.jp.phone.project.Activity;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -14,6 +13,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import co.jp.phone.project.Constant.DatabeseHelper;
 import co.jp.phone.project.Constant.telNumberConst;
@@ -39,8 +42,10 @@ public class PlayActivity extends AppCompatActivity {
     private final String se3 = "3";
     private final String se4 = "4";
 
+    /** シングルクォート*/
+    private final String sQuote= "'";
 
-    /*ボタン入力情報を設定*/
+    /** ボタン入力情報を設定*/
     public void on_ac_telButton_Click(View view){
         if(view.getId() == R.id.ac_bottom){
             this.clearText();
@@ -94,16 +99,57 @@ public class PlayActivity extends AppCompatActivity {
         editText =(EditText)findViewById(R.id.text);
         editText.setTextColor(Color.RED);
         editText.setFocusable(false);
+
+        /** １０円玉の画像を取得*/
         ImageView iv_coin1 = (ImageView)findViewById(R.id.coin1);
         ImageView iv_coin2 = (ImageView)findViewById(R.id.coin2);
         ImageView iv_coin3 = (ImageView)findViewById(R.id.coin3);
-        Bitmap bmp1 = BitmapFactory.decodeResource(getResources(),R.drawable.coin);
-        Bitmap bmp2 = BitmapFactory.decodeResource(getResources(),R.drawable.coin);
-        Bitmap bmp3 = BitmapFactory.decodeResource(getResources(),R.drawable.coin);
-        iv_coin1.setImageBitmap(bmp1);
+
+        /** ワークテーブルから情報を取得*/
+        int record_count = wkTbList();
+
+        if (record_count == 1){
+            /** １０円玉１枚分を非表示*/
+            iv_coin3.setVisibility(View.GONE);
+        } else if(record_count == 2){
+            /** １０円玉２枚分を非表示*/
+            iv_coin2.setVisibility(View.GONE);
+            iv_coin3.setVisibility(View.GONE);
+        }
 
         bgmPlayer.create(getApplicationContext(),R.raw.bgm_higurashi);
 
+    }
+
+    /**
+     *  ワークテーブルにレコードが存在するか確認
+     * @return
+     */
+    private int wkTbList() {
+
+        /** SQL作成*/
+        StringBuilder wkSql = new StringBuilder();
+        wkSql.append("SELECT * FROM TEL_WK_LIST");
+
+        /** rawQueryメソッドでデータを取得*/
+        DatabeseHelper dbHelper = new DatabeseHelper(this);
+        SQLiteDatabase wk = dbHelper.getReadableDatabase();
+
+        try{
+            /** SQL文を実行*/
+            Cursor cursor = wk.rawQuery(wkSql.toString(),null);
+
+            /** 件数をカウント*/
+             int ct = cursor.getCount();
+
+             /** 取得件数を返す*/
+             return ct;
+
+        }catch (Exception ex){
+            Log.e("telWklistテーブル情報取得エラー",ex.toString());
+        }
+
+        return 99;
     }
 
 
@@ -171,12 +217,28 @@ public class PlayActivity extends AppCompatActivity {
 
     /**
      * 指定した電話番号先を呼び出す
-     * @param val　入力された電話番号
+     * @param val1  入力された電話番号1
      * @return
      */
-    private String telPhoneTime(String val){
-        if(val.equals("")){
+    private String telPhoneTime(String val1){
+        /** nullチェック*/
+        if(val1.equals("")){
             return null;
+        }
+
+        /** デフォルトのカウント情報を取得*/
+        int count = 1;
+
+        /** ワークテーブルから情報を取得*/
+        Integer record_count = wkTbList();
+
+        Cursor dataList = wkDataList();
+
+        /** countを設定する*/
+        if (record_count == 1){
+            count = count + 1;
+        } else if(record_count == 2){
+            count = count + 2;
         }
 
         /** ヘルパーオブジェクト生成 */
@@ -185,15 +247,29 @@ public class PlayActivity extends AppCompatActivity {
         SQLiteDatabase db = helper.getWritableDatabase();
 
         StringBuilder sql = new StringBuilder();
-       /* sql.append()
-        "select * from TEL_PHONE_LIST tpl"
-        "where tpl.count_number ="
-        "and tpl.tel_number1  ="
-        "and tpl.tel_number2 ="
-        "and tpl.tel_number3 ="*/
-
-
+        Integer ct = new Integer(count);
         try {
+        sql.append("select tpl.end_id ,tpl.message from TEL_PHONE_LIST tpl");
+        if(count == 1){
+            sql.append(" where tpl.count_number = " + "'" + count + "'");
+            sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
+
+            String[] str  ={ct.toString(),val1};
+            db.rawQuery(sql.toString(),str);
+        }else if(count == 2){
+            sql.append(" where tpl.count_number = " + "'" + count + "'");
+            sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
+//            sql.append(" and tpl.tel_number2 = " + "'" + val2 + "'");
+            String[] str  ={ct.toString(),val1};
+            db.rawQuery(sql.toString(),str);
+        }else if(count == 3) {
+            sql.append(" where tpl.count_number = " + "'" + count + "'");
+            sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
+//            sql.append(" and tpl.tel_number2 = " + "'" + val2 + "'");
+//            sql.append(" and tpl.tel_number3 = " + "'" + val3 + "'");
+            String[] str  ={ct.toString(),val1};
+            db.rawQuery(sql.toString(),str);
+        }
 
 
 
@@ -205,4 +281,34 @@ public class PlayActivity extends AppCompatActivity {
 
         return null;
     }
+    /**
+     *  ワークテーブルから電話履歴情報を取得する。
+     * @return
+     */
+    private Cursor wkDataList() {
+
+        /** SQL作成*/
+        StringBuilder wkSql = new StringBuilder();
+        wkSql.append("SELECT * FROM TEL_WK_LIST");
+
+        /** rawQueryメソッドでデータを取得*/
+        DatabeseHelper dbHelper = new DatabeseHelper(this);
+        SQLiteDatabase wk = dbHelper.getReadableDatabase();
+
+        try{
+            /** SQL文を実行*/
+            Cursor cursor = wk.rawQuery(wkSql.toString(),null);
+
+//            ArrayList<Cursor> arrayList = new ArrayList<>();
+//            arrayList.add(cursor);
+
+            return cursor;
+
+        }catch (Exception ex){
+            Log.e("telWklistテーブル情報取得エラー",ex.toString());
+        }
+
+        return null;
+    }
+
 }

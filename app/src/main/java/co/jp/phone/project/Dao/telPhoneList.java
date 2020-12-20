@@ -1,9 +1,10 @@
-package Dao;
+package co.jp.phone.project.Dao;
 /**
  * entity定義
  * 論理テーブル名：TEL_PHONE_LIST
  * 物理テーブル名：電話番号リスト
  */
+
 public class telPhoneList {
 
     // 項目番号
