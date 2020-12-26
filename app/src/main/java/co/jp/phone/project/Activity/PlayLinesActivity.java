@@ -32,7 +32,7 @@ public class PlayLinesActivity extends AppCompatActivity {
     //プロローグエンド定数クラスのインスタンスを生成
     PrologueEndDefinitionConstant prologueEndDefinitionConstant = new PrologueEndDefinitionConstant();
     //プロローグ文字列を代入
-    String usePrologueList[] =prologueEndDefinitionConstant.getPrologueList();
+    String[] usePrologueList =prologueEndDefinitionConstant.getPrologueList();
     @SuppressLint("WrongViewCast")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class PlayLinesActivity extends AppCompatActivity {
     //タッチしたら文字変わる
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        try{
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 // カウントの加算
@@ -63,6 +64,8 @@ public class PlayLinesActivity extends AppCompatActivity {
                     intent.putExtra("tellCount", tellCount);
                     startActivity(intent);
                 }
+                //usePrologueListのサイズを確認して文字列をセットする。
+                if(usePrologueList.length>listCount){
                 //プロローグの文字をセットする。
                 if(listCount%(rnSetConut+1)==0){
                     //1行目の場合（または表示クリア後1行目）
@@ -73,21 +76,25 @@ public class PlayLinesActivity extends AppCompatActivity {
                     //2行目移行の場合（または表示クリア後2行目移行）
                     ((TextView)findViewById(R.id.textView)).setText(prologueStr + "\n"+ usePrologueList[listCount]);
                 }
-                //
-                if(rnCount==rnSetConut){
-                    //5個以上でTEXTVIEWVをクリアする
-                    prologueStr="";
-                    //改行数のカウンター用変数をリセット
-                    rnCount=0;
-                }else{
-                    if(listCount%(rnSetConut+1)==0){
-                        //1行目の場合（または表示クリア後1行目）表示プロローグ文字列に格納する。
-                        prologueStr = usePrologueList[listCount];
-                    }else {
-                        //2行目移行の場合（または表示クリア後2行目移行）表示プロローグ文字列に格納する。
-                        prologueStr = prologueStr + "\n"+ usePrologueList[listCount];
+                    if(rnCount==rnSetConut){
+                        //5個以上でTEXTVIEWVをクリアする
+                        prologueStr="";
+                        //改行数のカウンター用変数をリセット
+                        rnCount=0;
+                    }else{
+                        if(listCount%(rnSetConut+1)==0){
+                            //1行目の場合（または表示クリア後1行目）表示プロローグ文字列に格納する。
+                            prologueStr = usePrologueList[listCount];
+                        }else {
+                            //2行目移行の場合（または表示クリア後2行目移行）表示プロローグ文字列に格納する。
+                            prologueStr = prologueStr + "\n"+ usePrologueList[listCount];
+                        }
                     }
-                }
+            }
+                break;
+        }
+        }catch (IllegalStateException e){
+            throw new IllegalStateException("Unexpected value: " + event.getAction());
         }
         return super.onTouchEvent(event);
     }
