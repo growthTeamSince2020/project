@@ -2,6 +2,7 @@ package co.jp.phone.project.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.TextView;
@@ -24,9 +25,9 @@ public class PlayLinesActivity extends AppCompatActivity {
     int rnCount = 0;
     //改行数設定
     int rnSetConut = 4;
-
     int tellCount;
-
+    //再生の準備
+    MediaPlayer p;
     //表示文字列結合用
     String prologueStr = "";
     //プロローグエンド定数クラスのインスタンスを生成
@@ -47,6 +48,10 @@ public class PlayLinesActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.textView)).setText(usePrologueList[listCount]);
         //表示文字列結合用変数に入れる。
         prologueStr = usePrologueList[listCount];
+        //音楽の読み込み
+        p = MediaPlayer.create(getApplicationContext(),R.raw.bgm_higurashi);
+        //連続再生設定
+        p.setLooping(true);
     }
     //タッチしたら文字変わる
     @Override
@@ -64,6 +69,7 @@ public class PlayLinesActivity extends AppCompatActivity {
                     intent.putExtra("tellCount", tellCount);
                     startActivity(intent);
                 }
+                
                 //usePrologueListのサイズを確認して文字列をセットする。
                 if(usePrologueList.length>listCount){
                 //プロローグの文字をセットする。
@@ -97,5 +103,24 @@ public class PlayLinesActivity extends AppCompatActivity {
             throw new IllegalStateException("Unexpected value: " + event.getAction());
         }
         return super.onTouchEvent(event);
+    }
+    //アプリ起動時、再開時 画面が表示されるたびに実行(バックグラウンドミュージック
+    @Override
+    protected void onResume() {
+        super.onResume();
+        p.start(); //再生
+    }
+    //ホームボタン押下時　画面が非表示に実行(バックグラウンドミュージック)
+    @Override
+    protected void onPause() {
+        super.onPause();
+        p.pause();
+    }
+    //戻るボタン押下時　アプリ終了時に実行(バックグラウンドミュージック)モバイル　
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        p.release(); //メモリの開放
+        p = null; //音楽プレーヤーを破棄
     }
 }

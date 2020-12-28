@@ -3,12 +3,11 @@ package co.jp.phone.project.Activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
 
@@ -20,6 +19,8 @@ import co.jp.phone.project.R;
 public class MainActivity extends AppCompatActivity {
     //DBヘルパークラス
     private DatabaseConnectHelper helper;
+    //再生の準備
+    MediaPlayer p;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         try(SQLiteDatabase db = helper.getWritableDatabase()){
         Toast.makeText(this,"接続しました",Toast.LENGTH_SHORT).show();
         }
+        //音楽の読み込み
+        p = MediaPlayer.create(getApplicationContext(),R.raw.bgm_higurashi);
+        //連続再生設定
+        p.setLooping(true);
     }
     //「プロローグ」ボタン遷移　prologue_icon
     public void prologue_icon(View v){
@@ -45,6 +50,26 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, PlayActivity.class);
         startActivity(intent);
         }
+
+    //アプリ起動時、再開時 画面が表示されるたびに実行(バックグラウンドミュージック
+    @Override
+    protected void onResume() {
+        super.onResume();
+        p.start(); //再生
+    }
+    //ホームボタン押下時　画面が非表示に実行(バックグラウンドミュージック)
+    @Override
+    protected void onPause() {
+        super.onPause();
+        p.pause();
+    }
+    //戻るボタン押下時　アプリ終了時に実行(バックグラウンドミュージック)モバイル　
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        p.release(); //メモリの開放
+        p = null; //音楽プレーヤーを破棄
+    }
 }
 
 

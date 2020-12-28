@@ -1,6 +1,5 @@
 package co.jp.phone.project.Activity;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,11 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import co.jp.phone.project.Constant.DatabeseHelper;
 import co.jp.phone.project.Constant.telNumberConst;
@@ -44,7 +38,8 @@ public class PlayActivity extends AppCompatActivity {
     private final String se2 = "2";
     private final String se3 = "3";
     private final String se4 = "4";
-
+    //再生の準備
+    MediaPlayer p;
     /**
      * シングルクォート
      */
@@ -95,11 +90,6 @@ public class PlayActivity extends AppCompatActivity {
 
     }
 
-
-    // BGM準備
-    //BGMPlayer bgmPlayer = new BGMPlayer();
-    MediaPlayer bgmPlayer = new MediaPlayer();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,9 +114,10 @@ public class PlayActivity extends AppCompatActivity {
             iv_coin2.setVisibility(View.GONE);
             iv_coin3.setVisibility(View.GONE);
         }
-
-        bgmPlayer.create(getApplicationContext(), R.raw.bgm_higurashi);
-
+        //音楽の読み込み
+        p = MediaPlayer.create(getApplicationContext(),R.raw.bgm_higurashi);
+        //連続再生設定
+        p.setLooping(true);
     }
 
     /**
@@ -161,25 +152,6 @@ public class PlayActivity extends AppCompatActivity {
         return 99;
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        bgmPlayer.start();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        bgmPlayer.pause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        bgmPlayer.release();
-        bgmPlayer = null;
-    }
 
     /*入力番号をEditText蘭に表示
                 すでに入力されている情報がある場合は値を付加*/
@@ -327,5 +299,23 @@ public class PlayActivity extends AppCompatActivity {
 
         return null;
     }
-
+    //アプリ起動時、再開時 画面が表示されるたびに実行(バックグラウンドミュージック
+    @Override
+    protected void onResume() {
+        super.onResume();
+        p.start(); //再生
+    }
+    //ホームボタン押下時　画面が非表示に実行(バックグラウンドミュージック)
+    @Override
+    protected void onPause() {
+        super.onPause();
+        p.pause();
+    }
+    //戻るボタン押下時　アプリ終了時に実行(バックグラウンドミュージック)モバイル　
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        p.release(); //メモリの開放
+        p = null; //音楽プレーヤーを破棄
+    }
 }
