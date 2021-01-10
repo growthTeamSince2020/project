@@ -24,6 +24,7 @@ public class DatabaseConnectHelper extends SQLiteOpenHelper {
     public DatabaseConnectHelper (Context context){
         super(context,DBNAME,null,VERSION);
     }
+
     /**
      * 内部にデータベースが存在しないときに１回だけ実行されるメソッド
      * @param db DB接続のオブジェクト
@@ -39,6 +40,8 @@ public class DatabaseConnectHelper extends SQLiteOpenHelper {
         /** SQL実行(Insert文) */
         List<String> insertTelPhoneMeassgeList = insertData.getInsertTelPhoneMeassgeList();
         for(String telPhoneMeassge :insertTelPhoneMeassgeList){
+            //TODO 一意エラー時の時のためのログだし 削除後予定
+            Log.i("insert",telPhoneMeassge);
             db.execSQL(telPhoneMeassge);
         }
         List<String> insertTelEndMeassgeList = insertData.getInsertTelEndMeassgeList();
