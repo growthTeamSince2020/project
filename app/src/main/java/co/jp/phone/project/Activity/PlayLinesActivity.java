@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import co.jp.phone.project.Constant.PrologueEndDefinitionConstant;
+import co.jp.phone.project.Constant.CommonConst;
 import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
 
@@ -33,12 +33,8 @@ public class PlayLinesActivity extends AppCompatActivity {
     MediaPlayer p;
     //表示文字列結合用
     String prologueStr = "";
-    //プロローグエンド定数クラスのインスタンスを生成
-    PrologueEndDefinitionConstant prologueEndDefinitionConstant = new PrologueEndDefinitionConstant();
-
     //プロローグ文字列を代入
-    String[] usePrologueList =prologueEndDefinitionConstant.getPrologueList();
-
+    String[] usePrologueList ;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -55,10 +51,11 @@ public class PlayLinesActivity extends AppCompatActivity {
         DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
         /** ヘルパーからDB接続オブジェクトをもらう */
         SQLiteDatabase db = helper.getWritableDatabase();
-        //-------------工事中---------select試し中
+
         String conditions = "P000";
-        String[] tryPologueList = getEndList(db,conditions);
-        //-------------工事中---------select試し中
+        //セリフ表示初めの文字列を取得
+        usePrologueList = getEndList(db,conditions);
+
         //セリフ表示初めの文字列をセットする。
         ((TextView)findViewById(R.id.textView)).setText(usePrologueList[listCount]);
         //表示文字列結合用変数に入れる。
@@ -157,9 +154,11 @@ public class PlayLinesActivity extends AppCompatActivity {
             c.moveToNext();
         }
         c.close();
-        System.out.println(list[0]);
-
+        CommonConst commonConst= new CommonConst();
+        String commonSplitStr = commonConst.getMessageSplit();
+        String puloStr = (String) list[0];
+        String[] puloStrList = puloStr.split(commonSplitStr, 0);
         System.out.println("プロローグメッセージ取得終わり");
-        return (String[]) list;
+        return puloStrList;
     }
 }
