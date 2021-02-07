@@ -1,6 +1,7 @@
 package co.jp.phone.project.Activity;
 
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -16,7 +17,9 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.jp.phone.project.Constant.DatabeseHelper;
+import co.jp.phone.project.Constant.InsertDataConstant;
 import co.jp.phone.project.Constant.telNumberConst;
+import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
 
 public class PlayActivity extends AppCompatActivity {
@@ -223,12 +226,12 @@ public class PlayActivity extends AppCompatActivity {
         }
 
         /** ヘルパーオブジェクト生成 */
-        DatabeseHelper helper = new DatabeseHelper(getBaseContext());
+        DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
         /** ヘルパーからDB接続オブジェクトをもらう */
         SQLiteDatabase db = helper.getWritableDatabase();
 
 
-        StringBuilder sql = new StringBuilder();
+        StringBuffer sql = new StringBuffer();
         int rowcount = 0;
         try {
             sql.append("select tpl.end_id ,tpl.message from TEL_PHONE_LIST tpl");
@@ -247,17 +250,22 @@ public class PlayActivity extends AppCompatActivity {
             }
             SQLiteCursor c = (SQLiteCursor) db.rawQuery(sql.toString(), null);
             rowcount = c.getCount();
-            StringBuffer sb = new StringBuffer();
 
+            StringBuffer sb = new StringBuffer();
+            String end_id = "";
             for (int i = 0; i < rowcount; i++) {
-                String end_id = c.getString(0);
+
+                if(c.getString(0) != "" || c.getString(0) != null) {
+                    end_id = c.getString(0);
+                }
                 String message = c.getString(1);
 
                 sb.append("[" + end_id + ":" + message + "]");
                 c.moveToNext();
             }
 
-            System.out.println(sb);
+            InsertDataConstant dataConstant = new InsertDataConstant();
+            dataConstant.getInsertTelWkList(count,val1);
 
         } catch (Exception ex) {
             Log.e("telPhoneTimeエラー", ex.toString());
