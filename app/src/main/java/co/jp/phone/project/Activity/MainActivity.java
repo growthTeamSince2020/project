@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         p.release(); //メモリの開放
         p = null; //音楽プレーヤーを破棄
     }
+
+    //TODO　DBデータ作成時の待ち時間に読み込み中のアニメーションを追加する。
 }
 
 
