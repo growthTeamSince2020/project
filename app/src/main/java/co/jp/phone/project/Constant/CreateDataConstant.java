@@ -18,7 +18,7 @@ public class CreateDataConstant {
             + "tel_number1 VARCHAR(14),"
             + "tel_number2 VARCHAR(14),"
             + "tel_number3 VARCHAR(14),"
-            + "sel_numer VARCHAR(2),"
+            + "sel_number VARCHAR(2),"
             + "message VARCHAR(2000) NOT NULL,"
             + "end_id VARCHAR(3)"
             + ");";
