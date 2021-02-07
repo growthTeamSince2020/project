@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+// TODO: DatabeseHelperが二つあるため、こちらを後日削除
 public class DatabeseHelper extends SQLiteOpenHelper {
     /** データベース名 */
     private static final String DATABASE_NAME = "LoadToSQLiteMaster.db";
