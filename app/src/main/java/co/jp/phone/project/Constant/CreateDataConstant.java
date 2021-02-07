@@ -5,12 +5,12 @@ package co.jp.phone.project.Constant;
  * @author growth
  * @date 2020/10/11.
  */
-public class CreateDataConstant{
+public class CreateDataConstant {
     //Create文
-    private String CreateStr ="CREATE TABLE ";
+    private String CreateStr = "CREATE TABLE ";
 
     //telPhoneMeassgeListテーブル名
-    private String telPhoneMeassgeList ="TEL_PHONE_LIST  ";
+    private String telPhoneMeassgeList = "TEL_PHONE_LIST  ";
     //Create 電話番号メッセージリストマスタ
     private String CreateTelPhoneMeassgeList = CreateStr + telPhoneMeassgeList
             + "(record_no INT(4) PRIMARY KEY NOT NULL,"
@@ -29,7 +29,7 @@ public class CreateDataConstant{
 
 
     //tel_wk_listテーブル名
-    private String telwkList ="TEL_WK_LIST ";
+    private String telwkList = "TEL_WK_LIST ";
     //Create 電話番号メッセージリストマスタ
     private String CreateTelWkList = CreateStr + telwkList
             + "(record_no INT(4) PRIMARY KEY NOT NULL,"
@@ -37,16 +37,20 @@ public class CreateDataConstant{
             + "tel_number1 VARCHAR(14)"
             + ");";
 
-    public String getTelwkList() { return CreateTelWkList; }
+    public String getTelwkList() {
+        return CreateTelWkList;
+    }
 
 
     //telEndMessageListテーブル名
-    private String telEndMeassgeList ="TEL_END_MESSAGE_LIST ";
+    private String telEndMeassgeList = "TEL_END_MESSAGE_LIST ";
     //Create 電話番号メッセージリストマスタ
     private String CreateEndMeassgeList = CreateStr + telEndMeassgeList
             + "(end_id VARCHAR(3) PRIMARY KEY NOT NULL,"
             + "message VARCHAR(2000) NOT NULL"
             + ");";
 
-    public String getTelEndMeassgeList() { return CreateEndMeassgeList; }
+    public String getTelEndMeassgeList() {
+        return CreateEndMeassgeList;
+    }
 }
