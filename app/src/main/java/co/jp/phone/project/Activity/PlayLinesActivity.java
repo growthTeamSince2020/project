@@ -2,6 +2,8 @@ package co.jp.phone.project.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.jp.phone.project.Constant.PrologueEndDefinitionConstant;
+import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
 
 /**
@@ -32,8 +35,11 @@ public class PlayLinesActivity extends AppCompatActivity {
     String prologueStr = "";
     //プロローグエンド定数クラスのインスタンスを生成
     PrologueEndDefinitionConstant prologueEndDefinitionConstant = new PrologueEndDefinitionConstant();
+
     //プロローグ文字列を代入
     String[] usePrologueList =prologueEndDefinitionConstant.getPrologueList();
+
+
     @SuppressLint("WrongViewCast")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +50,15 @@ public class PlayLinesActivity extends AppCompatActivity {
         //プロローグに遷移
         setContentView(R.layout.activity_playline);
         System.out.println("遷移先：セリフ画面");
+
+        /** ヘルパーオブジェクト生成 */
+        DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
+        /** ヘルパーからDB接続オブジェクトをもらう */
+        SQLiteDatabase db = helper.getWritableDatabase();
+        //-------------工事中---------select試し中
+        String conditions = "P000";
+        String[] tryPologueList = getEndList(db,conditions);
+        //-------------工事中---------select試し中
         //セリフ表示初めの文字列をセットする。
         ((TextView)findViewById(R.id.textView)).setText(usePrologueList[listCount]);
         //表示文字列結合用変数に入れる。
@@ -122,5 +137,29 @@ public class PlayLinesActivity extends AppCompatActivity {
         super.onDestroy();
         p.release(); //メモリの開放
         p = null; //音楽プレーヤーを破棄
+    }
+
+    //プロローグメッセージ 取得
+    public String[] getEndList(SQLiteDatabase db,String selectId) {
+        // プロローグメッセージ　SELECT要素の定義
+        // SELECT message FROM TEL_END_MESSAGE_LIST WHERE end_id = "P000";
+        String table = "TEL_END_MESSAGE_LIST"; //テーブル名
+        String[] columns = {"message"}; //取得カラム名
+        String selection = "end_id = " + "'" + selectId + "'"; //検索条件
+
+        System.out.println("selection :" + selection);
+        System.out.println("プロローグメッセージ取得はじめ");
+        Cursor c = db.query(table, columns, selection, null, null, null, null);
+        c.moveToFirst();
+        CharSequence[] list = new CharSequence[c.getCount()];
+        for (int i = 0; i < list.length; i++) {
+            list[i] = c.getString(0);
+            c.moveToNext();
+        }
+        c.close();
+        System.out.println(list[0]);
+
+        System.out.println("プロローグメッセージ取得終わり");
+        return (String[]) list;
     }
 }
