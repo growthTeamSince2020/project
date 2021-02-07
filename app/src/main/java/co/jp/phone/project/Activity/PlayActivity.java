@@ -234,7 +234,15 @@ public class PlayActivity extends AppCompatActivity {
         StringBuffer sql = new StringBuffer();
         int rowcount = 0;
         try {
-            sql.append("select tpl.end_id ,tpl.message from TEL_PHONE_LIST tpl");
+            sql.append("select tpl.record_no" +
+                    ",tpl.count_number" +
+                    ",tpl.tel_number1" +
+                    ",tpl.tel_number2" +
+                    ",tpl.tel_number3" +
+                    ",tpl.sel_number" +
+                    ",tpl.message" +
+                    ",tpl.end_id" +
+                    " from TEL_PHONE_LIST tpl");
             if (count == 1) {
                 sql.append(" where tpl.count_number = " + "'" + count + "'");
                 sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
@@ -250,15 +258,19 @@ public class PlayActivity extends AppCompatActivity {
             }
             SQLiteCursor c = (SQLiteCursor) db.rawQuery(sql.toString(), null);
             rowcount = c.getCount();
-
+            c.moveToFirst();
             StringBuffer sb = new StringBuffer();
-            String end_id = "";
             for (int i = 0; i < rowcount; i++) {
 
-                if(c.getString(0) != "" || c.getString(0) != null) {
-                    end_id = c.getString(0);
-                }
-                String message = c.getString(1);
+//            int record_id = c.getInt(0);
+//            int count_no = c.getInt(1);
+//            String tel_num1 = c.getString(2);
+//            String tel_num2 = c.getString(3);
+//            String tel_num3 = c.getString(4);
+//            String sel_num = c.getString(5);
+                String end_id = c.getString(6);
+                String message = c.getString(7);
+
 
                 sb.append("[" + end_id + ":" + message + "]");
                 c.moveToNext();
@@ -268,6 +280,7 @@ public class PlayActivity extends AppCompatActivity {
             dataConstant.getInsertTelWkList(count,val1);
 
         } catch (Exception ex) {
+            ex.getStackTrace();
             Log.e("telPhoneTimeエラー", ex.toString());
         } finally {
             db.close();
