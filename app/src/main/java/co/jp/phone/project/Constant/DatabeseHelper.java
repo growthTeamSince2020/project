@@ -19,8 +19,7 @@ public class DatabeseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * 内部にデータベースが存在しないときに１回だけ実行されるメソッド
-     * @param db DB接続のオブジェクト
+     * ゴミ　いずれ削除かも
      */
     @Override
     public void onCreate(SQLiteDatabase db){
