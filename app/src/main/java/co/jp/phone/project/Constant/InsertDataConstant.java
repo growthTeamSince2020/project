@@ -108,7 +108,7 @@ public class InsertDataConstant {
     }
 
 
-    public String getInsertTelWkList(int count,String[] telNumber) {
+    public String getInsertTelWkList(int count,String telNumber) {
         InsertTelWkList ="INSERT INTO TEL_WK_LIST VALUES("
                 + count
                 + ","
