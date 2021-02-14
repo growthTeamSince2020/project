@@ -1,6 +1,6 @@
 package co.jp.phone.project.Constant;
 
-public class telNumberConst {
+public class TelNumberConst {
 
     // 電話番号＆キー
     public static final String  button1="1";

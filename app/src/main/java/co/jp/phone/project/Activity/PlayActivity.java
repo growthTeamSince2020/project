@@ -3,7 +3,6 @@ package co.jp.phone.project.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -18,9 +17,8 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import co.jp.phone.project.Constant.DatabeseHelper;
 import co.jp.phone.project.Constant.InsertDataConstant;
-import co.jp.phone.project.Constant.telNumberConst;
+import co.jp.phone.project.Constant.TelNumberConst;
 import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
 
@@ -61,29 +59,29 @@ public class PlayActivity extends AppCompatActivity {
         } else if (view.getId() == R.id.tel_Bottom) {
             this.numberLoad();
         } else if (view.getId() == R.id.tel_bottom1) {
-            this.init(telNumberConst.button1);
+            this.init(TelNumberConst.button1);
         } else if (view.getId() == R.id.tel_bottom2) {
-            this.init(telNumberConst.button2);
+            this.init(TelNumberConst.button2);
         } else if (view.getId() == R.id.tel_bottom3) {
-            this.init(telNumberConst.button3);
+            this.init(TelNumberConst.button3);
         } else if (view.getId() == R.id.tel_bottom4) {
-            this.init(telNumberConst.button4);
+            this.init(TelNumberConst.button4);
         } else if (view.getId() == R.id.tel_bottom5) {
-            this.init(telNumberConst.button5);
+            this.init(TelNumberConst.button5);
         } else if (view.getId() == R.id.tel_bottom6) {
-            this.init(telNumberConst.button6);
+            this.init(TelNumberConst.button6);
         } else if (view.getId() == R.id.tel_bottom7) {
-            this.init(telNumberConst.button7);
+            this.init(TelNumberConst.button7);
         } else if (view.getId() == R.id.tel_bottom8) {
-            this.init(telNumberConst.button8);
+            this.init(TelNumberConst.button8);
         } else if (view.getId() == R.id.tel_bottom9) {
-            this.init(telNumberConst.button9);
+            this.init(TelNumberConst.button9);
         } else if (view.getId() == R.id.tel_bottom0) {
-            this.init(telNumberConst.button0);
+            this.init(TelNumberConst.button0);
         } else if (view.getId() == R.id.tel_bottom_asta) {
-            this.init(telNumberConst.button_asta);
+            this.init(TelNumberConst.button_asta);
         } else if (view.getId() == R.id.tel_bottom_sharp) {
-            this.init(telNumberConst.button_sharp);
+            this.init(TelNumberConst.button_sharp);
         }
     }
 
@@ -106,28 +104,28 @@ public class PlayActivity extends AppCompatActivity {
         editText.setFocusable(false);
 
         /** １０円玉の画像を取得*/
-//        ImageView iv_coin1 = (ImageView) findViewById(R.id.coin1);
-//        ImageView iv_coin2 = (ImageView) findViewById(R.id.coin2);
-//        ImageView iv_coin3 = (ImageView) findViewById(R.id.coin3);
+        ImageView iv_coin1 = (ImageView) findViewById(R.id.coin1);
+        ImageView iv_coin2 = (ImageView) findViewById(R.id.coin2);
+        ImageView iv_coin3 = (ImageView) findViewById(R.id.coin3);
 
-//        /** ワークテーブルから情報を取得*/
-//        int record_count = wkTbList();
-//
-//        if (record_count == 1) {
-//            /** １０円玉１枚分を非表示*/
-//            iv_coin3.setVisibility(View.GONE);
-//        } else if (record_count == 2) {
-//            /** １０円玉２枚分を非表示*/
-//            iv_coin2.setVisibility(View.GONE);
-//            iv_coin3.setVisibility(View.GONE);
-//        }
+        /** ワークテーブルから情報を取得*/
+        int record_count = wkTbList();
+
+        if (record_count == 1) {
+            /** １０円玉１枚分を非表示*/
+            iv_coin3.setVisibility(View.GONE);
+        } else if (record_count == 2) {
+            /** １０円玉２枚分を非表示*/
+            iv_coin2.setVisibility(View.GONE);
+            iv_coin3.setVisibility(View.GONE);
+        }
+
         //音楽の読み込み
         p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_higurashi);
         //連続再生設定
         p.setLooping(true);
     }
-    /*入力番号をEditText蘭に表示
-                すでに入力されている情報がある場合は値を付加*/
+    /*入力番号をEditText蘭に表示すでに入力されている情報がある場合は値を付加*/
     private String init(String val) {
 
         editText = (EditText) findViewById(R.id.text);
@@ -162,8 +160,6 @@ public class PlayActivity extends AppCompatActivity {
         }
 
         this.telPhoneTime(value);
-
-
         this.clearText();
         return null;
     }
@@ -178,7 +174,6 @@ public class PlayActivity extends AppCompatActivity {
         if (val1.equals("")) {
             return null;
         }
-
 
         /** ワークテーブルから情報を取得*/
         Integer record_count = wkTbList();
@@ -196,7 +191,6 @@ public class PlayActivity extends AppCompatActivity {
         DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
         /** ヘルパーからDB接続オブジェクトをもらう */
         SQLiteDatabase db = helper.getWritableDatabase();
-
 
         StringBuffer sql = new StringBuffer();
         int rowcount = 0;
@@ -237,7 +231,6 @@ public class PlayActivity extends AppCompatActivity {
                 cv.put("message",message);
 //                db.insert(helper.getDatabaseName(),null,cv);
 
-
                 InsertDataConstant inst = new InsertDataConstant();
                 String wkInsert = inst.getInsertTelWkList(count,val1);
 
@@ -253,19 +246,7 @@ public class PlayActivity extends AppCompatActivity {
             ex.getStackTrace();
             Log.e("telPhoneTimeエラー", ex.toString());
         } finally {
-            /** １０円玉の画像を取得*/
-            ImageView iv_coin1 = (ImageView) findViewById(R.id.coin1);
-            ImageView iv_coin2 = (ImageView) findViewById(R.id.coin2);
-//            ImageView iv_coin3 = (ImageView) findViewById(R.id.coin3);
 
-            if (count == 1) {
-                /** １０円玉１枚分を非表示*/
-                iv_coin1.setVisibility(View.GONE);
-            } else if (count == 2) {
-                /** １０円玉２枚分を非表示*/
-                iv_coin1.setVisibility(View.GONE);
-                iv_coin2.setVisibility(View.GONE);
-            }
         }
 
         return null;
@@ -280,7 +261,6 @@ public class PlayActivity extends AppCompatActivity {
 
         /** ヘルパーオブジェクト生成 */
         DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
-
         /** ヘルパーからDB接続オブジェクトをもらう */
         SQLiteDatabase db = helper.getWritableDatabase();
 
@@ -314,13 +294,14 @@ public class PlayActivity extends AppCompatActivity {
         StringBuilder wkSql = new StringBuilder();
         wkSql.append("SELECT * FROM TEL_WK_LIST");
 
-        /** rawQueryメソッドでデータを取得*/
-        DatabeseHelper dbHelper = new DatabeseHelper(this);
-        SQLiteDatabase wk = dbHelper.getReadableDatabase();
+        /** ヘルパーオブジェクト生成 */
+        DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
+        /** ヘルパーからDB接続オブジェクトをもらう */
+        SQLiteDatabase db = helper.getWritableDatabase();
 
         try {
             /** SQL文を実行*/
-            Cursor cursor = wk.rawQuery(wkSql.toString(), null);
+            Cursor cursor = db.rawQuery(wkSql.toString(), null);
 
             /** 件数をカウント*/
             int ct = cursor.getCount();
