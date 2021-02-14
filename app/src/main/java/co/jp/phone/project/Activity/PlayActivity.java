@@ -1,5 +1,7 @@
 package co.jp.phone.project.Activity;
 
+import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteCursor;
@@ -41,6 +43,8 @@ public class PlayActivity extends AppCompatActivity {
     private final String se2 = "2";
     private final String se3 = "3";
     private final String se4 = "4";
+    /** デフォルトのカウント情報を取得*/
+    int count = 1;
     //再生の準備
     MediaPlayer p;
     /**
@@ -102,60 +106,26 @@ public class PlayActivity extends AppCompatActivity {
         editText.setFocusable(false);
 
         /** １０円玉の画像を取得*/
-        ImageView iv_coin1 = (ImageView) findViewById(R.id.coin1);
-        ImageView iv_coin2 = (ImageView) findViewById(R.id.coin2);
-        ImageView iv_coin3 = (ImageView) findViewById(R.id.coin3);
+//        ImageView iv_coin1 = (ImageView) findViewById(R.id.coin1);
+//        ImageView iv_coin2 = (ImageView) findViewById(R.id.coin2);
+//        ImageView iv_coin3 = (ImageView) findViewById(R.id.coin3);
 
-        /** ワークテーブルから情報を取得*/
-        int record_count = wkTbList();
-
-        if (record_count == 1) {
-            /** １０円玉１枚分を非表示*/
-            iv_coin3.setVisibility(View.GONE);
-        } else if (record_count == 2) {
-            /** １０円玉２枚分を非表示*/
-            iv_coin2.setVisibility(View.GONE);
-            iv_coin3.setVisibility(View.GONE);
-        }
+//        /** ワークテーブルから情報を取得*/
+//        int record_count = wkTbList();
+//
+//        if (record_count == 1) {
+//            /** １０円玉１枚分を非表示*/
+//            iv_coin3.setVisibility(View.GONE);
+//        } else if (record_count == 2) {
+//            /** １０円玉２枚分を非表示*/
+//            iv_coin2.setVisibility(View.GONE);
+//            iv_coin3.setVisibility(View.GONE);
+//        }
         //音楽の読み込み
-        p = MediaPlayer.create(getApplicationContext(),R.raw.bgm_higurashi);
+        p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_higurashi);
         //連続再生設定
         p.setLooping(true);
     }
-
-    /**
-     * ワークテーブルにレコードが存在するか確認
-     *
-     * @return
-     */
-    private int wkTbList() {
-
-        /** SQL作成*/
-        StringBuilder wkSql = new StringBuilder();
-        wkSql.append("SELECT * FROM TEL_WK_LIST");
-
-        /** rawQueryメソッドでデータを取得*/
-        DatabeseHelper dbHelper = new DatabeseHelper(this);
-        SQLiteDatabase wk = dbHelper.getReadableDatabase();
-
-        try {
-            /** SQL文を実行*/
-            Cursor cursor = wk.rawQuery(wkSql.toString(), null);
-
-            /** 件数をカウント*/
-            int ct = cursor.getCount();
-
-            /** 取得件数を返す*/
-            return ct;
-
-        } catch (Exception ex) {
-            Log.e("telWklistテーブル情報取得エラー", ex.toString());
-        }
-
-        return 99;
-    }
-
-
     /*入力番号をEditText蘭に表示
                 すでに入力されている情報がある場合は値を付加*/
     private String init(String val) {
@@ -200,7 +170,6 @@ public class PlayActivity extends AppCompatActivity {
 
     /**
      * 指定した電話番号先を呼び出す
-     *
      * @param val1 入力された電話番号1
      * @return
      */
@@ -210,8 +179,6 @@ public class PlayActivity extends AppCompatActivity {
             return null;
         }
 
-        /** デフォルトのカウント情報を取得*/
-        int count = 1;
 
         /** ワークテーブルから情報を取得*/
         Integer record_count = wkTbList();
@@ -262,29 +229,43 @@ public class PlayActivity extends AppCompatActivity {
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < rowcount; i++) {
 
-//            int record_id = c.getInt(0);
-//            int count_no = c.getInt(1);
-//            String tel_num1 = c.getString(2);
-//            String tel_num2 = c.getString(3);
-//            String tel_num3 = c.getString(4);
-//            String sel_num = c.getString(5);
-                String end_id = c.getString(6);
-                String message = c.getString(7);
-
-
-                sb.append("[" + end_id + ":" + message + "]");
+                String end_id = c.getString(7);
+                String message = c.getString(6);
                 c.moveToNext();
+                ContentValues cv = new ContentValues();
+                cv.put("end_id",end_id);
+                cv.put("message",message);
+//                db.insert(helper.getDatabaseName(),null,cv);
+
+
+                InsertDataConstant inst = new InsertDataConstant();
+                String wkInsert = inst.getInsertTelWkList(count,val1);
+
+                db.execSQL(wkInsert);
+
+                //電話応答先のセリフを渡す
+                Intent intent = new Intent(PlayActivity.this,PlayLinesActivity.class);
+                // 渡したいデータとキーを指定する
+                intent.putExtra("tellCount", message);
+                startActivity(intent);
             }
-
-            InsertDataConstant dataConstant = new InsertDataConstant();
-            dataConstant.getInsertTelWkList(count,val1);
-
         } catch (Exception ex) {
             ex.getStackTrace();
             Log.e("telPhoneTimeエラー", ex.toString());
         } finally {
-            db.close();
-            ;
+            /** １０円玉の画像を取得*/
+            ImageView iv_coin1 = (ImageView) findViewById(R.id.coin1);
+            ImageView iv_coin2 = (ImageView) findViewById(R.id.coin2);
+//            ImageView iv_coin3 = (ImageView) findViewById(R.id.coin3);
+
+            if (count == 1) {
+                /** １０円玉１枚分を非表示*/
+                iv_coin1.setVisibility(View.GONE);
+            } else if (count == 2) {
+                /** １０円玉２枚分を非表示*/
+                iv_coin1.setVisibility(View.GONE);
+                iv_coin2.setVisibility(View.GONE);
+            }
         }
 
         return null;
@@ -296,6 +277,38 @@ public class PlayActivity extends AppCompatActivity {
      * @return
      */
     private Cursor wkDataList() {
+
+        /** ヘルパーオブジェクト生成 */
+        DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
+
+        /** ヘルパーからDB接続オブジェクトをもらう */
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        /** SQL作成*/
+        StringBuilder wkSql = new StringBuilder();
+        wkSql.append("SELECT * FROM TEL_WK_LIST");
+
+        try {
+            /** SQL文を実行*/
+            SQLiteCursor cursor = (SQLiteCursor) db.rawQuery(wkSql.toString(), null);
+
+//            ArrayList<Cursor> arrayList = new ArrayList<>();
+//            arrayList.add(cursor);
+
+            return cursor;
+
+        } catch (Exception ex) {
+            Log.e("telWklistテーブル情報取得エラー", ex.toString());
+        }
+
+        return null;
+    }
+
+    /**
+     * ワークテーブルにレコードが存在するか確認
+     * @return
+     */
+    private int wkTbList() {
 
         /** SQL作成*/
         StringBuilder wkSql = new StringBuilder();
@@ -309,17 +322,19 @@ public class PlayActivity extends AppCompatActivity {
             /** SQL文を実行*/
             Cursor cursor = wk.rawQuery(wkSql.toString(), null);
 
-//            ArrayList<Cursor> arrayList = new ArrayList<>();
-//            arrayList.add(cursor);
+            /** 件数をカウント*/
+            int ct = cursor.getCount();
 
-            return cursor;
+            /** 取得件数を返す*/
+            return ct;
 
         } catch (Exception ex) {
             Log.e("telWklistテーブル情報取得エラー", ex.toString());
         }
 
-        return null;
+        return 99;
     }
+
     //アプリ起動時、再開時 画面が表示されるたびに実行(バックグラウンドミュージック
     @Override
     protected void onResume() {
