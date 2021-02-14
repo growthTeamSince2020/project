@@ -114,8 +114,7 @@ public class InsertDataConstant {
                 + ","
                 + count
                 + ","
-                + telNumber
-                + ","
+                + "'"  + telNumber + "'"
                 +");";
 
         return InsertTelWkList;

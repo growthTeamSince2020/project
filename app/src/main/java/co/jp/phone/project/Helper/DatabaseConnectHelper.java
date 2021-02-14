@@ -15,8 +15,8 @@ import co.jp.phone.project.Constant.InsertDataConstant;
  * @date 2020/10/11.
  */
 public class DatabaseConnectHelper extends SQLiteOpenHelper {
-    static final private String DBNAME = "telList.sqlite";
-    static final private int VERSION = 1;
+    static final public String DBNAME = "telList.sqlite";
+    static final public int VERSION = 1;
     static final private CreateDataConstant createData = new CreateDataConstant();
     static final private InsertDataConstant insertData = new InsertDataConstant();
 
