@@ -271,9 +271,15 @@ public class PlayActivity extends AppCompatActivity {
                 
                 //電話応答先のセリフを渡す
                 Intent intent = new Intent(PlayActivity.this,PlayLinesActivity.class);
+
+                //TODO:toyama test用 後削除
+                //message = "endId変数だけ中身がない場合■test■test■test";
+                //end_id = "E000";
+
                 // 渡したいデータとキーを指定する
                 intent.putExtra("end_id", end_id);
                 intent.putExtra("message", message);
+
                 startActivity(intent);
             }
             for (int i = 0; i < rowcount; i++) {
@@ -292,6 +298,7 @@ public class PlayActivity extends AppCompatActivity {
 
                 //電話応答先のセリフを渡す
                 Intent intent = new Intent(PlayActivity.this,PlayLinesActivity.class);
+
                 // 渡したいデータとキーを指定する
                 intent.putExtra("end_id", end_id);
                 intent.putExtra("message", message);
