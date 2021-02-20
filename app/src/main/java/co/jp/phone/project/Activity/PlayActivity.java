@@ -109,7 +109,8 @@ public class PlayActivity extends AppCompatActivity {
         ImageView iv_coin3 = (ImageView) findViewById(R.id.coin3);
 
         /** ワークテーブルから情報を取得*/
-        int record_count = wkTbList();
+        Cursor record = wkTbList();
+        int record_count = record.getCount();
 
         if (record_count == 1) {
             /** １０円玉１枚分を非表示*/
@@ -181,15 +182,15 @@ public class PlayActivity extends AppCompatActivity {
         }
 
         /** ワークテーブルから情報を取得*/
-        Integer record_count = wkTbList();
+        Cursor rt = wkTbList();
+        /** 件数をカウント*/
+        int record_count = rt.getCount();
 
         if(record_count > 0) {
-            Cursor dataList = wkDataList();
-
             for (int i = 0; i < record_count; i++) {
 
-                String telNumber = dataList.getString(2);
-                dataList.moveToNext();
+                String telNumber = rt.getString(2);
+                rt.moveToNext();
 
                 if(record_count == 1){
                     val2 = telNumber;
@@ -240,7 +241,41 @@ public class PlayActivity extends AppCompatActivity {
             SQLiteCursor c = (SQLiteCursor) db.rawQuery(sql.toString(), null);
             rowcount = c.getCount();
             c.moveToFirst();
-            StringBuffer sb = new StringBuffer();
+
+            if(rowcount == 0){
+                StringBuffer noSql = new StringBuffer();
+                String none = "none";
+                noSql.append("select tpl.record_no" +
+                        ",tpl.count_number" +
+                        ",tpl.tel_number1" +
+                        ",tpl.tel_number2" +
+                        ",tpl.tel_number3" +
+                        ",tpl.sel_number" +
+                        ",tpl.message" +
+                        ",tpl.end_id" +
+                        " from TEL_PHONE_LIST tpl");
+                noSql.append(" where tpl.count_number = " + "'" + count + "'");
+                noSql.append(" and tpl.tel_number1 = " + "'" + none + "'");
+                SQLiteCursor no = (SQLiteCursor) db.rawQuery(noSql.toString(), null);
+                no.moveToFirst();
+
+                String end_id = no.getString(7);
+                String message = no.getString(6);
+                ContentValues cv = new ContentValues();
+                cv.put("end_id",end_id);
+                cv.put("message",message);
+                val1="-";
+                InsertDataConstant inst = new InsertDataConstant();
+                String wkInsert = inst.getInsertTelWkList(count,val1);
+                db.execSQL(wkInsert);
+                
+                //電話応答先のセリフを渡す
+                Intent intent = new Intent(PlayActivity.this,PlayLinesActivity.class);
+                // 渡したいデータとキーを指定する
+                intent.putExtra("end_id", end_id);
+                intent.putExtra("message", message);
+                startActivity(intent);
+            }
             for (int i = 0; i < rowcount; i++) {
 
                 String end_id = c.getString(7);
@@ -258,7 +293,8 @@ public class PlayActivity extends AppCompatActivity {
                 //電話応答先のセリフを渡す
                 Intent intent = new Intent(PlayActivity.this,PlayLinesActivity.class);
                 // 渡したいデータとキーを指定する
-                intent.putExtra("tellCount", message);
+                intent.putExtra("end_id", end_id);
+                intent.putExtra("message", message);
                 startActivity(intent);
             }
         } catch (Exception ex) {
@@ -269,39 +305,10 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     /**
-     * ワークテーブルから電話履歴情報を取得する。
-     *
-     * @return
-     */
-    private Cursor wkDataList() {
-
-        /** ヘルパーオブジェクト生成 */
-        DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
-        /** ヘルパーからDB接続オブジェクトをもらう */
-        SQLiteDatabase db = helper.getWritableDatabase();
-
-        /** SQL作成*/
-        StringBuilder wkSql = new StringBuilder();
-        wkSql.append("SELECT * FROM TEL_WK_LIST");
-
-        try {
-            /** SQL文を実行*/
-            SQLiteCursor cursor = (SQLiteCursor) db.rawQuery(wkSql.toString(), null);
-
-            return cursor;
-
-        } catch (Exception ex) {
-            Log.e("telWklistテーブル情報取得エラー", ex.toString());
-        }
-
-        return null;
-    }
-
-    /**
      * ワークテーブルにレコードが存在するか確認
      * @return
      */
-    private int wkTbList() {
+    private Cursor wkTbList() {
 
         /** SQL作成*/
         StringBuilder wkSql = new StringBuilder();
@@ -316,17 +323,15 @@ public class PlayActivity extends AppCompatActivity {
             /** SQL文を実行*/
             Cursor cursor = db.rawQuery(wkSql.toString(), null);
 
-            /** 件数をカウント*/
-            int ct = cursor.getCount();
 
             /** 取得件数を返す*/
-            return ct;
+            return cursor;
 
         } catch (Exception ex) {
             Log.e("telWklistテーブル情報取得エラー", ex.toString());
         }
 
-        return 99;
+        return null;
     }
 
     //アプリ起動時、再開時 画面が表示されるたびに実行(バックグラウンドミュージック
