@@ -6,14 +6,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import co.jp.phone.project.Constant.CommonConst;
 import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
+
+
 
 /**
  * * セリフ画面アクションクラス
@@ -28,38 +33,69 @@ public class PlayLinesActivity extends AppCompatActivity {
     int rnCount = 0;
     //改行数設定
     int rnSetConut = 4;
-    int tellCount;
     //再生の準備
     MediaPlayer p;
     //表示文字列結合用
-    String prologueStr = "";
-    //プロローグ文字列を代入
-    String[] usePrologueList ;
+    String serif = "";
+    //セリフ文字列を代入
+    String[] serifList ;
+    //共通定義クラス
+    CommonConst commonConst= new CommonConst();
+    //メッセージ区切り文字定義 取得
+    String commonSplitStr = commonConst.getMessageSplit();
+    //プロローグのENDID条件
+    String conditions = "P000";
+    //セリフ
+    String message;
+    //ENDID
+    String end_id;
+    //ENDメッセージ
+    String[] endMessage;
 
     @SuppressLint("WrongViewCast")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //tellCountをプレイ画面より受け取り
-        //受け取る変数がないとき
-        //受け取った時
-        //プロローグに遷移
+        //受け取った時　プロローグに遷移
         setContentView(R.layout.activity_playline);
         System.out.println("遷移先：セリフ画面");
 
-        /** ヘルパーオブジェクト生成 */
+        // インテントを取得
+        Intent intent = getIntent();
+        // PLAY画面のインテントに保存されたデータを取得
+        message = intent.getStringExtra("message");
+        end_id = intent.getStringExtra("end_id");
+
+        /* ヘルパーオブジェクト生成 */
         DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
-        /** ヘルパーからDB接続オブジェクトをもらう */
+        /* ヘルパーからDB接続オブジェクトをもらう */
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        String conditions = "P000";
-        //セリフ表示初めの文字列を取得
-        usePrologueList = getEndList(db,conditions);
+        //メッセージがない場合
+        if(TextUtils.isEmpty(message)){
+            //DBからプロローグを取得
+            serifList = getEndList(db,conditions);
+            //メッセージがある場合
+        }else{
+            //プレイ画面のメッセージからセリフリスト取得
+            serifList = message.split(commonSplitStr, 0);
+        }
+        //messageとend_idがNullでない場合
+        if (!TextUtils.isEmpty(message)&& !TextUtils.isEmpty(end_id)){
+            //end_idからエンドリストを取得
+            endMessage = getEndList(db,end_id);
+
+            if(endMessage != null){
+                //セリフリストとして配列を結合する。
+                serifList = ArrayUtils.addAll(serifList,endMessage);
+            }
+        }
 
         //セリフ表示初めの文字列をセットする。
-        ((TextView)findViewById(R.id.textView)).setText(usePrologueList[listCount]);
+        ((TextView)findViewById(R.id.textView)).setText(serifList[listCount]);
         //表示文字列結合用変数に入れる。
-        prologueStr = usePrologueList[listCount];
+        serif = serifList[listCount];
         //音楽の読み込み
         p = MediaPlayer.create(getApplicationContext(),R.raw.bgm_higurashi);
         //連続再生設定
@@ -69,48 +105,61 @@ public class PlayLinesActivity extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         try{
-        switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                // カウントの加算
-                listCount++;
-                //プロローグを出したら処理を終了
-                if(usePrologueList.length == listCount){
+            switch (event.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    // カウントの加算
+                    listCount++;
 
-                    Intent intent = new Intent(PlayLinesActivity.this, PlayActivity.class);
-                    // 渡したいデータとキーを指定する
-                    intent.putExtra("tellCount", tellCount);
-                    startActivity(intent);
-                }
-                
-                //usePrologueListのサイズを確認して文字列をセットする。
-                if(usePrologueList.length>listCount){
-                //プロローグの文字をセットする。
-                if(listCount%(rnSetConut+1)==0){
-                    //1行目の場合（または表示クリア後1行目）
-                    ((TextView)findViewById(R.id.textView)).setText(usePrologueList[listCount]);
-                }else {
-                    //改行数の加算
-                    rnCount++;
-                    //2行目移行の場合（または表示クリア後2行目移行）
-                    ((TextView)findViewById(R.id.textView)).setText(prologueStr + "\n"+ usePrologueList[listCount]);
-                }
-                    if(rnCount==rnSetConut){
-                        //5個以上でTEXTVIEWVをクリアする
-                        prologueStr="";
-                        //改行数のカウンター用変数をリセット
-                        rnCount=0;
-                    }else{
-                        if(listCount%(rnSetConut+1)==0){
-                            //1行目の場合（または表示クリア後1行目）表示プロローグ文字列に格納する。
-                            prologueStr = usePrologueList[listCount];
+                    //プロローグを出したら処理を終了
+                    if(serifList.length == listCount){
+
+                        //end_idがない場合は、プレイ画面へ
+                        if(TextUtils.isEmpty(end_id)){
+                            Intent intentPlay  = new Intent(PlayLinesActivity.this, PlayActivity.class);
+                            startActivity(intentPlay);
+                        //end_idがある場合は、TOP画面へ
                         }else {
-                            //2行目移行の場合（または表示クリア後2行目移行）表示プロローグ文字列に格納する。
-                            prologueStr = prologueStr + "\n"+ usePrologueList[listCount];
+                            Intent intentMain = new Intent(this, MainActivity.class);
+                            // ActivitySecond と ActivityThird を消す	該当のActivity上にスタックされたタスクをクリアしてから起動
+                            intentMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                            // ActivityFirst を再利用する（onCreate() は呼ばれない）現在のActivityと同じアクティビティは起動しない
+                            intentMain.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                            startActivity(intentMain);
                         }
                     }
+
+                    //serifListのサイズを確認して文字列をセットする。
+                    if(serifList.length > listCount){
+                        //プロローグの文字をセットする。
+                        if(listCount % (rnSetConut + 1) == 0){
+                            //1行目の場合（または表示クリア後1行目）
+                            ((TextView)findViewById(R.id.textView)).setText(serifList[listCount]);
+                        }else {
+                            //改行数の加算
+                            rnCount++;
+                            //2行目移行の場合（または表示クリア後2行目移行）
+                            ((TextView)findViewById(R.id.textView)).setText(serif + "\n"+ serifList[listCount]);
+                        }
+                        if(rnCount == rnSetConut){
+                            //5個以上でTEXTVIEWVをクリアする
+                            serif = "";
+                            //改行数のカウンター用変数をリセット
+                            rnCount = 0;
+                        }else{
+                            if(listCount % (rnSetConut + 1) == 0){
+                                //1行目の場合（または表示クリア後1行目）表示プロローグ文字列に格納する。
+                                serif = serifList[listCount];
+                            }else {
+                                //2行目移行の場合（または表示クリア後2行目移行）表示プロローグ文字列に格納する。
+                                serif = serif + "\n"+ serifList[listCount];
+                            }
+                        }
+                    }
+                    break;
             }
-                break;
-        }
+
         }catch (IllegalStateException e){
             throw new IllegalStateException("Unexpected value: " + event.getAction());
         }
@@ -154,8 +203,6 @@ public class PlayLinesActivity extends AppCompatActivity {
             c.moveToNext();
         }
         c.close();
-        CommonConst commonConst= new CommonConst();
-        String commonSplitStr = commonConst.getMessageSplit();
         String puloStr = (String) list[0];
         String[] puloStrList = puloStr.split(commonSplitStr, 0);
         System.out.println("プロローグメッセージ取得終わり");
