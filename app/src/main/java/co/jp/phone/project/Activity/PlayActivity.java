@@ -170,6 +170,11 @@ public class PlayActivity extends AppCompatActivity {
      * @return
      */
     private String telPhoneTime(String val1) {
+        /**入力された電話番号2*/
+        String val2 = "";
+        /**入力された電話番号3*/
+        String val3 = "";
+
         /** nullチェック*/
         if (val1.equals("")) {
             return null;
@@ -178,7 +183,22 @@ public class PlayActivity extends AppCompatActivity {
         /** ワークテーブルから情報を取得*/
         Integer record_count = wkTbList();
 
-        Cursor dataList = wkDataList();
+        if(record_count > 0) {
+            Cursor dataList = wkDataList();
+
+            for (int i = 0; i < record_count; i++) {
+
+                String telNumber = dataList.getString(2);
+                dataList.moveToNext();
+
+                if(record_count == 1){
+                    val2 = telNumber;
+                }else if(record_count == 2){
+                    val3 = telNumber;
+                }
+            }
+        }
+
 
         /** countを設定する*/
         if (record_count == 1) {
@@ -209,13 +229,13 @@ public class PlayActivity extends AppCompatActivity {
                 sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
             } else if (count == 2) {
                 sql.append(" where tpl.count_number = " + "'" + count + "'");
-                sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
-//            sql.append(" and tpl.tel_number2 = " + "'" + val2 + "'");
+                sql.append(" and tpl.tel_number1 = " + "'" + val2 + "'");
+                sql.append(" and tpl.tel_number2 = " + "'" + val1 + "'");
             } else if (count == 3) {
                 sql.append(" where tpl.count_number = " + "'" + count + "'");
-                sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
-//            sql.append(" and tpl.tel_number2 = " + "'" + val2 + "'");
-//            sql.append(" and tpl.tel_number3 = " + "'" + val3 + "'");
+                sql.append(" and tpl.tel_number1 = " + "'" + val3 + "'");
+                sql.append(" and tpl.tel_number2 = " + "'" + val2 + "'");
+                sql.append(" and tpl.tel_number3 = " + "'" + val1 + "'");
             }
             SQLiteCursor c = (SQLiteCursor) db.rawQuery(sql.toString(), null);
             rowcount = c.getCount();
@@ -229,7 +249,6 @@ public class PlayActivity extends AppCompatActivity {
                 ContentValues cv = new ContentValues();
                 cv.put("end_id",end_id);
                 cv.put("message",message);
-//                db.insert(helper.getDatabaseName(),null,cv);
 
                 InsertDataConstant inst = new InsertDataConstant();
                 String wkInsert = inst.getInsertTelWkList(count,val1);
@@ -245,10 +264,7 @@ public class PlayActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.getStackTrace();
             Log.e("telPhoneTimeエラー", ex.toString());
-        } finally {
-
         }
-
         return null;
     }
 
@@ -271,9 +287,6 @@ public class PlayActivity extends AppCompatActivity {
         try {
             /** SQL文を実行*/
             SQLiteCursor cursor = (SQLiteCursor) db.rawQuery(wkSql.toString(), null);
-
-//            ArrayList<Cursor> arrayList = new ArrayList<>();
-//            arrayList.add(cursor);
 
             return cursor;
 
