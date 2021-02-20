@@ -188,7 +188,7 @@ public class PlayActivity extends AppCompatActivity {
 
         if(record_count > 0) {
             for (int i = 0; i < record_count; i++) {
-
+                rt.moveToFirst();
                 String telNumber = rt.getString(2);
                 rt.moveToNext();
 
