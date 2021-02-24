@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="390dp"
+        android:layout_width="690dp"
         android:layout_height="392dp"
         android:text=""
         android:textColor="#FFFFFF"

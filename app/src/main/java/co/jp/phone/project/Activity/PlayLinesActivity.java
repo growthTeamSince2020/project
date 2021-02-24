@@ -8,6 +8,9 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,6 +54,10 @@ public class PlayLinesActivity extends AppCompatActivity {
     String end_id;
     //ENDメッセージ
     String[] endMessage;
+    String[] endKeyWord = {"END_ME"};
+
+    private ImageView imageView;
+
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -60,6 +67,8 @@ public class PlayLinesActivity extends AppCompatActivity {
         //受け取った時　プロローグに遷移
         setContentView(R.layout.activity_playline);
         System.out.println("遷移先：セリフ画面");
+
+        imageView = findViewById(R.id.imageView);
 
         // インテントを取得
         Intent intent = getIntent();
@@ -87,6 +96,7 @@ public class PlayLinesActivity extends AppCompatActivity {
             endMessage = getEndList(db,end_id);
 
             if(endMessage != null){
+                endMessage = ArrayUtils.addAll(endKeyWord,endMessage);
                 //セリフリストとして配列を結合する。
                 serifList = ArrayUtils.addAll(serifList,endMessage);
             }
@@ -105,59 +115,81 @@ public class PlayLinesActivity extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         try{
-            switch (event.getAction()){
-                case MotionEvent.ACTION_DOWN:
-                    // カウントの加算
-                    listCount++;
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {// カウントの加算
+                listCount++;
 
-                    //プロローグを出したら処理を終了
-                    if(serifList.length == listCount){
+                //プロローグを出したら処理を終了
+                if (serifList.length == listCount) {
 
-                        //end_idがない場合は、プレイ画面へ
-                        if(TextUtils.isEmpty(end_id)){
-                            Intent intentPlay  = new Intent(PlayLinesActivity.this, PlayActivity.class);
-                            startActivity(intentPlay);
+                    //end_idがない場合は、プレイ画面へ
+                    if (TextUtils.isEmpty(end_id)) {
+                        Intent intentPlay = new Intent(PlayLinesActivity.this, PlayActivity.class);
+                        startActivity(intentPlay);
                         //end_idがある場合は、TOP画面へ
-                        }else {
-                            Intent intentMain = new Intent(this, MainActivity.class);
-                            // ActivitySecond と ActivityThird を消す	該当のActivity上にスタックされたタスクをクリアしてから起動
-                            intentMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    } else {
+                        Intent intentMain = new Intent(this, MainActivity.class);
+                        // ActivitySecond と ActivityThird を消す	該当のActivity上にスタックされたタスクをクリアしてから起動
+                        intentMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                            // ActivityFirst を再利用する（onCreate() は呼ばれない）現在のActivityと同じアクティビティは起動しない
-                            intentMain.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        // ActivityFirst を再利用する（onCreate() は呼ばれない）現在のActivityと同じアクティビティは起動しない
+                        intentMain.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-                            startActivity(intentMain);
+                        startActivity(intentMain);
+                    }
+                }
+
+                //serifListのサイズを確認して文字列をセットする。
+                if (serifList.length > listCount) {
+                    //プロローグの文字をセットする。
+                    if (listCount % (rnSetConut + 1) == 0 && !serifList[listCount].equals("END_ME")) {
+                        //1行目の場合（または表示クリア後1行目）
+                        ((TextView) findViewById(R.id.textView)).setText(serifList[listCount]);
+                    } else {
+                        //改行数の加算
+                        rnCount++;
+                        //2行目移行の場合（または表示クリア後2行目移行）
+                        if (serif.equals("")) {
+                            ((TextView) findViewById(R.id.textView)).setText(serifList[listCount]);
+                        } else {
+                            ((TextView) findViewById(R.id.textView)).setText(String.format("%s\n%s", serif, serifList[listCount]));
                         }
                     }
 
-                    //serifListのサイズを確認して文字列をセットする。
-                    if(serifList.length > listCount){
-                        //プロローグの文字をセットする。
-                        if(listCount % (rnSetConut + 1) == 0){
-                            //1行目の場合（または表示クリア後1行目）
-                            ((TextView)findViewById(R.id.textView)).setText(serifList[listCount]);
-                        }else {
-                            //改行数の加算
-                            rnCount++;
-                            //2行目移行の場合（または表示クリア後2行目移行）
-                            ((TextView)findViewById(R.id.textView)).setText(serif + "\n"+ serifList[listCount]);
-                        }
-                        if(rnCount == rnSetConut){
-                            //5個以上でTEXTVIEWVをクリアする
-                            serif = "";
-                            //改行数のカウンター用変数をリセット
-                            rnCount = 0;
-                        }else{
-                            if(listCount % (rnSetConut + 1) == 0){
-                                //1行目の場合（または表示クリア後1行目）表示プロローグ文字列に格納する。
+                    if (rnCount == rnSetConut) {
+                        //5個以上でTEXTVIEWVをクリアする
+                        serif = "";
+                        //改行数のカウンター用変数をリセット
+                        rnCount = 0;
+
+                    } else if (serifList[listCount].equals("END_ME")) {
+                        ((TextView) findViewById(R.id.textView)).setText("");
+                        //エンドのセリフのためTEXTVIEWVをクリアする
+                        serif = "";
+                        //改行数のカウンター用変数をリセット
+                        rnCount = 0;
+                        //エンドのセリフによりrnSetConutにずれが発生するので補正
+                        rnSetConut += (listCount % (rnSetConut + 1));
+
+                        //黒い画面から透過度をあげて徐々にもとの背景に戻る。
+                        //fadeinXml();//変更したい場合に備えて
+
+                        //元の背景の透過度を上げて徐々に画面を黒くする。
+                        fadeoutXml();
+                    } else {
+                        if (listCount % (rnSetConut + 1) == 0) {
+                            //1行目の場合（または表示クリア後1行目）表示プロローグ文字列に格納する。
+                            serif = serifList[listCount];
+                        } else {
+                            //2行目移行の場合（または表示クリア後2行目移行）表示プロローグ文字列に格納する。
+                            if (serif.equals("")) {
                                 serif = serifList[listCount];
-                            }else {
-                                //2行目移行の場合（または表示クリア後2行目移行）表示プロローグ文字列に格納する。
-                                serif = serif + "\n"+ serifList[listCount];
+                            } else {
+                                serif = serif + "\n" + serifList[listCount];
                             }
                         }
                     }
-                    break;
+
+                }
             }
 
         }catch (IllegalStateException e){
@@ -208,4 +240,17 @@ public class PlayLinesActivity extends AppCompatActivity {
         System.out.println("プロローグメッセージ取得終わり");
         return puloStrList;
     }
+    //フィードアウトアニメーション
+    private void fadeoutXml(){
+        Animation animation= AnimationUtils.loadAnimation(this,
+                R.anim.alpha_fadeout);
+        imageView.startAnimation(animation);
+    }
+    //フィードインアニメーション　変更したい場合に備えて
+    //private void fadeinXml(){
+    //    Animation animation= AnimationUtils.loadAnimation(this,
+    //            R.anim.alpha_fadein);
+    //    imageView.startAnimation(animation);
+    //}
+
 }
