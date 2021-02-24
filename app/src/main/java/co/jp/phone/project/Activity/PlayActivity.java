@@ -53,71 +53,87 @@ public class PlayActivity extends AppCompatActivity {
     /**
      * ボタン入力情報を設定
      */
-    public void on_ac_telButton_Click(View view) throws InterruptedException {
+    public void on_ac_telButton_Click(View view) {
 
         if (view.getId() == R.id.ac_bottom) {
             this.clearText();
         } else if (view.getId() == R.id.tel_Bottom) {
+            //音楽の読み込み
+            p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_a);
+            //連続再生設定
+            p.setLooping(true);
             this.numberLoad();
         } else if (view.getId() == R.id.tel_bottom1) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_b);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button1);
         } else if (view.getId() == R.id.tel_bottom2) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_c);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button2);
         } else if (view.getId() == R.id.tel_bottom3) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_d);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button3);
         } else if (view.getId() == R.id.tel_bottom4) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_c);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button4);
         } else if (view.getId() == R.id.tel_bottom5) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_b);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button5);
         } else if (view.getId() == R.id.tel_bottom6) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_d);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button6);
         } else if (view.getId() == R.id.tel_bottom7) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_a);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button7);
         } else if (view.getId() == R.id.tel_bottom8) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_c);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button8);
         } else if (view.getId() == R.id.tel_bottom9) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_b);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button9);
         } else if (view.getId() == R.id.tel_bottom0) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_d);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button0);
         } else if (view.getId() == R.id.tel_bottom_asta) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_c);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button_asta);
         } else if (view.getId() == R.id.tel_bottom_sharp) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_btm_a);
-            p.start();
+            //連続再生設定
+            p.setLooping(true);
             this.init(TelNumberConst.button_sharp);
         }
     }
@@ -149,20 +165,20 @@ public class PlayActivity extends AppCompatActivity {
         int record_count = record.getCount();
 
         if (record_count == 1) {
-            //音楽の読み込み
-            p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_juwakitoru);
-            p.start();
-
             /** １０円玉１枚分を非表示*/
             iv_coin3.setVisibility(View.GONE);
-        } else if (record_count == 2) {
             //音楽の読み込み
             p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_juwakitoru);
-            p.start();
-
+            //連続再生設定
+            p.setLooping(true);
+        } else if (record_count == 2) {
             /** １０円玉２枚分を非表示*/
             iv_coin2.setVisibility(View.GONE);
             iv_coin3.setVisibility(View.GONE);
+            //音楽の読み込み
+            p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_juwakitoru);
+            //連続再生設定
+            p.setLooping(true);
         }
 
         //音楽の読み込み
@@ -191,7 +207,7 @@ public class PlayActivity extends AppCompatActivity {
 
 
     /*電話番号入力情報を取得*/
-    private String numberLoad() throws InterruptedException {
+    private String numberLoad() {
 
         editText = (EditText) findViewById(R.id.text);
         editText.setHeight(12);
@@ -203,10 +219,7 @@ public class PlayActivity extends AppCompatActivity {
         if (value.equals("")) {
             return null;
         }
-        //音楽の読み込み
-        p = MediaPlayer.create(getApplicationContext(), R.raw.bgm_call);
-        p.start();
-        Thread.sleep(9000);
+
         this.telPhoneTime(value);
         this.clearText();
         return null;
@@ -241,10 +254,8 @@ public class PlayActivity extends AppCompatActivity {
 
                 if(record_count == 1){
                     val2 = telNumber;
-                }else if(record_count == 2 && val2 != ""){
-                    val3 = telNumber;
                 }else if(record_count == 2){
-                    val2 = telNumber;
+                    val3 = telNumber;
                 }
             }
         }
@@ -279,13 +290,13 @@ public class PlayActivity extends AppCompatActivity {
                 sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
             } else if (count == 2) {
                 sql.append(" where tpl.count_number = " + "'" + count + "'");
-                sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
-                sql.append(" and tpl.tel_number2 = " + "'" + val2 + "'");
+                sql.append(" and tpl.tel_number1 = " + "'" + val2 + "'");
+                sql.append(" and tpl.tel_number2 = " + "'" + val1 + "'");
             } else if (count == 3) {
                 sql.append(" where tpl.count_number = " + "'" + count + "'");
-                sql.append(" and tpl.tel_number1 = " + "'" + val1 + "'");
+                sql.append(" and tpl.tel_number1 = " + "'" + val3 + "'");
                 sql.append(" and tpl.tel_number2 = " + "'" + val2 + "'");
-                sql.append(" and tpl.tel_number3 = " + "'" + val3 + "'");
+                sql.append(" and tpl.tel_number3 = " + "'" + val1 + "'");
             }
             SQLiteCursor c = (SQLiteCursor) db.rawQuery(sql.toString(), null);
             rowcount = c.getCount();
