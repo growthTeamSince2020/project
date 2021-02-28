@@ -6,8 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -20,7 +23,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import co.jp.phone.project.Constant.CommonConst;
 import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
-
 
 
 /**
@@ -174,15 +176,20 @@ public class PlayLinesActivity extends AppCompatActivity {
                         //黒い画面から透過度をあげて徐々にもとの背景に戻る。
                        // fadeinXml();//変更したい場合に備えて
 
-//                        //透明度を変えている時間処理を停止し、後処理
-//                        // Handlerクラスをインスタンス化し、postDelayedメソッドを呼んでいる
-//                        new Handler().postDelayed(new Runnable() {
-//                            // Runnable型のインスタンス化と定義
-//                            @Override
-//                            public void run() {
-//
-//                            }
-//                        }, 3000); // 遅らせたい時間(ミリ秒) 3000ミリ秒 -> 3秒
+                        // タッチ無効化
+                        Window window = getWindow();
+                        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                        //透明度を変えている時間処理を停止し、後処理
+                        // Handlerクラスをインスタンス化し、postDelayedメソッドを呼んでいる
+                        new Handler().postDelayed(new Runnable() {
+                            // Runnable型のインスタンス化と定義
+                            @Override
+                            public void run() {
+                            // 無効化解除
+                                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            }
+                        }, 2000); // 遅らせたい時間(ミリ秒) 3000ミリ秒 -> 3秒
 
                     } else {
                         if (listCount % (rnSetConut + 1) == 0) {
