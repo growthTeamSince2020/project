@@ -169,12 +169,21 @@ public class PlayLinesActivity extends AppCompatActivity {
                         rnCount = 0;
                         //エンドのセリフによりrnSetConutにずれが発生するので補正
                         rnSetConut += (listCount % (rnSetConut + 1));
-
-                        //黒い画面から透過度をあげて徐々にもとの背景に戻る。
-                        //fadeinXml();//変更したい場合に備えて
-
                         //元の背景の透過度を上げて徐々に画面を黒くする。
                         fadeoutXml();
+                        //黒い画面から透過度をあげて徐々にもとの背景に戻る。
+                       // fadeinXml();//変更したい場合に備えて
+
+//                        //透明度を変えている時間処理を停止し、後処理
+//                        // Handlerクラスをインスタンス化し、postDelayedメソッドを呼んでいる
+//                        new Handler().postDelayed(new Runnable() {
+//                            // Runnable型のインスタンス化と定義
+//                            @Override
+//                            public void run() {
+//
+//                            }
+//                        }, 3000); // 遅らせたい時間(ミリ秒) 3000ミリ秒 -> 3秒
+
                     } else {
                         if (listCount % (rnSetConut + 1) == 0) {
                             //1行目の場合（または表示クリア後1行目）表示プロローグ文字列に格納する。
@@ -191,7 +200,6 @@ public class PlayLinesActivity extends AppCompatActivity {
 
                 }
             }
-
         }catch (IllegalStateException e){
             throw new IllegalStateException("Unexpected value: " + event.getAction());
         }
@@ -247,10 +255,10 @@ public class PlayLinesActivity extends AppCompatActivity {
         imageView.startAnimation(animation);
     }
     //フィードインアニメーション　変更したい場合に備えて
-    //private void fadeinXml(){
-    //    Animation animation= AnimationUtils.loadAnimation(this,
-    //            R.anim.alpha_fadein);
-    //    imageView.startAnimation(animation);
-    //}
+//    private void fadeinXml(){
+//        Animation animation= AnimationUtils.loadAnimation(this,
+//                R.anim.alpha_fadein);
+//        imageView.startAnimation(animation);
+//    }
 
 }

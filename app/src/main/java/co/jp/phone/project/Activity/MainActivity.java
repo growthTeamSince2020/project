@@ -1,13 +1,16 @@
 package co.jp.phone.project.Activity;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import co.jp.phone.project.Helper.DatabaseConnectHelper;
 import co.jp.phone.project.R;
 
@@ -25,9 +28,15 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //プロセスダイアログ表示
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("処理を実行中しています");
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         // DBファイルを削除
         deleteDatabase("LoadToSQLiteMaster.db");
         deleteDatabase("telList.sqlite");
@@ -39,10 +48,14 @@ public class MainActivity extends AppCompatActivity {
         try(SQLiteDatabase db = helper.getWritableDatabase()){
         Toast.makeText(this,"接続しました",Toast.LENGTH_SHORT).show();
         }
+
         //音楽の読み込み
         p = MediaPlayer.create(getApplicationContext(),R.raw.bgm_higurashi);
         //連続再生設定
         p.setLooping(true);
+
+        //データベース接続後、プロセスダイアログ表示を閉じる。
+        progressDialog.dismiss();
     }
     //「プロローグ」ボタン遷移　prologue_icon
     public void prologue_icon(View v){
