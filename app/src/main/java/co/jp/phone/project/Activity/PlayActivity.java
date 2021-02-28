@@ -208,7 +208,7 @@ public class PlayActivity extends AppCompatActivity {
         p.start();
         Thread.sleep(9000);
         this.telPhoneTime(value);
-        this.clearText();
+        //this.clearText();
         return null;
     }
 
@@ -353,12 +353,45 @@ public class PlayActivity extends AppCompatActivity {
                 intent.putExtra("message", message);
                 startActivity(intent);
             }
+            if(count == 3){
+                this.wkListDel();
+            }
         } catch (Exception ex) {
             ex.getStackTrace();
             Log.e("telPhoneTimeエラー", ex.toString());
         }
         return null;
     }
+
+    /**
+     * ワークテーブルにレコード削除
+     * @return
+     */
+    private Cursor wkListDel() {
+
+        /** SQL作成*/
+        StringBuilder wkSql = new StringBuilder();
+        wkSql.append("DELETE FROM TEL_WK_LIST");
+
+        /** ヘルパーオブジェクト生成 */
+        DatabaseConnectHelper helper = new DatabaseConnectHelper(getBaseContext());
+        /** ヘルパーからDB接続オブジェクトをもらう */
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        try {
+            /** SQL文を実行*/
+            Cursor cursor = db.rawQuery(wkSql.toString(), null);
+            cursor.moveToFirst();
+
+            return cursor;
+
+        } catch (Exception ex) {
+            Log.e("telWklistテーブル削除エラー", ex.toString());
+        }
+
+        return null;
+    }
+
 
     /**
      * ワークテーブルにレコードが存在するか確認
