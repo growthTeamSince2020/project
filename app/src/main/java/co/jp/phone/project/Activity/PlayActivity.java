@@ -58,6 +58,8 @@ public class PlayActivity extends AppCompatActivity {
         if (view.getId() == R.id.ac_bottom) {
             this.clearText();
         } else if (view.getId() == R.id.tel_Bottom) {
+            ImageView iv_telbtm = (ImageView) findViewById(R.id.tel_Bottom);
+            iv_telbtm.setVisibility(View.GONE);
             this.numberLoad();
         } else if (view.getId() == R.id.tel_bottom1) {
             //音楽の読み込み
